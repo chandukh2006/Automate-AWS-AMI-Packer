@@ -53,3 +53,18 @@ Update the `packer-vars.json` file with your specific AWS environment details:
   "subnet_id": "subnet-xxxxxx",
   "region": "us-east-1"
 }
+
+
+
+## 🚀 Usage
+
+### 1. Configuration
+Update the `packer-vars.json` file with your specific AWS environment details:
+```json
+{
+  "aws_access_key": "YOUR_ACCESS_KEY",
+  "aws_secret_key": "YOUR_SECRET_KEY",
+  "vpc_id": "vpc-xxxxxx",
+  "subnet_id": "subnet-xxxxxx",
+  "region": "us-east-1"
+}
