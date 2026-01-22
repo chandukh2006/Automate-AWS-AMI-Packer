@@ -1,4 +1,3 @@
-
 # Comprehensive Guide: Automated Secure AMI Creation
 
 ![Packer](https://img.shields.io/badge/tool-Packer-blue?style=flat&logo=packer)
@@ -6,7 +5,7 @@
 ![Inspector](https://img.shields.io/badge/security-AWS%20Inspector-green?style=flat)
 ![Status](https://img.shields.io/badge/status-Active-success)
 
-**Author:** Chandu K H
+**Author:** chandukh2006  
 **Tools:** AWS EC2, AWS Inspector, HashiCorp Packer (HCL)
 
 ---
@@ -55,3 +54,75 @@ sudo apt-get update && sudo apt-get install -y gnupg software-properties-common
 curl -fsSL [https://apt.releases.hashicorp.com/gpg](https://apt.releases.hashicorp.com/gpg) | sudo apt-key add -
 sudo apt-add-repository "deb [arch=amd64] [https://apt.releases.hashicorp.com](https://apt.releases.hashicorp.com) $(lsb_release -cs) main"
 sudo apt-get update && sudo apt-get install packer
+2. AWS Permissions (IAM)
+To run this automation successfully, ensure your AWS Access Keys have the following IAM policies attached:
+
+AmazonEC2FullAccess: Required to launch instances, create images, and terminate instances.
+
+AmazonInspectorFullAccess: Required if you plan to automate the vulnerability assessment scans.
+
+📂 Part 3: Repository Files Setup
+Ensure your folder structure looks like this:
+
+Plaintext
+/my-packer-project
+├── packer.pkr.hcl       # Main configuration (Source + Build)
+├── packer-vars.json     # Variables (Secrets/Region info)
+├── docker.service       # Systemd unit file for Docker
+└── README.md            # This documentation file
+A. packer-vars.json (The Variables)
+Do not commit this file if it contains real secrets.
+
+JSON
+{
+  "aws_access_key": "YOUR_ACCESS_KEY_HERE",
+  "aws_secret_key": "YOUR_SECRET_KEY_HERE",
+  "region": "us-east-1",
+  "vpc_id": "vpc-xxxxxx",
+  "subnet_id": "subnet-xxxxxx",
+  "source_ami": "ami-xxxxxx"
+}
+B. packer.pkr.hcl (The Logic)
+This replaces the old packer.json. Ensure it includes:
+
+Source block: Defines the base AMI (Ubuntu), instance type (t2.micro), and SSH username.
+
+Build block: Defines provisioners (Shell scripts to install Nginx/Docker, File provisioners to upload docker.service).
+
+⚡ Part 4: Execution Commands
+Since you are using HCL (.pkr.hcl), the commands differ slightly from the old JSON format.
+
+1. Initialize Packer
+Downloads the necessary AWS plugins defined in your HCL file.
+
+Bash
+packer init packer.pkr.hcl
+2. Format & Validate
+Ensures your code is clean and syntactically correct.
+
+Bash
+# Format the code (Auto-fixes spacing)
+packer fmt packer.pkr.hcl
+
+# Validate configuration
+packer validate -var-file="packer-vars.json" packer.pkr.hcl
+3. Inspect (Optional)
+Shows a summary of what will be built without running it.
+
+Bash
+packer inspect -var-file="packer-vars.json" packer.pkr.hcl
+4. Build the AMI
+This command launches the instance, runs scripts, creates the AMI, and terminates the instance.
+
+Bash
+packer build -var-file="packer-vars.json" packer.pkr.hcl
+🛠️ Part 5: Troubleshooting
+Wait for SSH Failures:
+
+Check your AWS Security Group attached to the instance. It must allow Port 22 (SSH) from 0.0.0.0/0 (or Packer's IP).
+
+Ensure the Subnet has "Auto-assign Public IP" enabled.
+
+Permissions Errors:
+
+Verify IAM user policy allows ec2:CreateImage, ec2:RunInstances, and ec2:TerminateInstances.
