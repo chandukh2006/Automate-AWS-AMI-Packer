@@ -1,13 +1,21 @@
 #!/bin/bash
 
+# --- COLORS & STYLING ---
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+BLUE='\033[0;34m'
+CYAN='\033[0;36m'
+YELLOW='\033[1;33m'
+BOLD='\033[1m'
+NC='\033[0m' # No Color
+
 # --- 1. Clean Setup ---
 rm -f packer.exe
 rm -rf .git
-git init
+git init > /dev/null 2>&1
 git branch -M main
 
 # --- 2. Create .gitignore (Security Critical) ---
-# We explicitly ignore variables files so secrets are never pushed
 cat <<EOF > .gitignore
 *.exe
 packer-vars.json
@@ -16,8 +24,7 @@ packer-vars.json
 .DS_Store
 EOF
 
-# --- 3. Create packer-vars.json (NO CREDENTIALS HERE) ---
-# This file only contains infrastructure IDs, not secrets.
+# --- 3. Create packer-vars.json (Template) ---
 cat <<EOF > packer-vars.json
 {
   "region": "us-east-1",
@@ -98,28 +105,36 @@ packer build -var-file="packer-vars.json" .
 *Cloud & DevOps Enthusiastic*
 EOF
 
-# --- 5. Output Developer Instructions ---
+# --- 5. IMPRESSIVE OUTPUT ---
 clear
-echo "✅ Project Successfully Configured."
-echo "--------------------------------------------------------"
-echo "COMMANDS FOR LOCAL DEVELOPMENT (Cheatsheet for others):"
-echo "--------------------------------------------------------"
+echo -e "${BLUE}============================================================${NC}"
+echo -e "${BOLD}${CYAN}   🚀  AWS AMI AUTOMATION PIPELINE SETUP COMPLETE  🚀   ${NC}"
+echo -e "${BLUE}============================================================${NC}"
 echo ""
-echo "1. AUTHENTICATE (Secure Way):"
-echo "   $ aws configure"
-echo "   (Input your Access Key ID and Secret Access Key here)"
+echo -e "   ${GREEN}✅ Git Repository Initialized${NC}"
+echo -e "   ${GREEN}✅ Security Rules Applied (.gitignore created)${NC}"
+echo -e "   ${GREEN}✅ Professional Documentation Generated (README.md)${NC}"
+echo -e "   ${GREEN}✅ Environment Configured (packer-vars.json)${NC}"
 echo ""
-echo "2. INITIALIZE PLUGINS:"
-echo "   $ packer init ."
+echo -e "${YELLOW}------------------------------------------------------------${NC}"
+echo -e "${BOLD}       💡  CHEAT SHEET FOR LOCAL DEVELOPMENT  💡       ${NC}"
+echo -e "${YELLOW}------------------------------------------------------------${NC}"
 echo ""
-echo "3. FORMAT CODE (Make it pretty):"
-echo "   $ packer fmt ."
+echo -e "${BOLD}1. 🔑 AUTHENTICATE (The Secure Way)${NC}"
+echo -e "   ${CYAN}$ aws configure${NC}"
+echo -e "   ${RED}STOP!${NC} Do not hardcode keys. Use the CLI."
 echo ""
-echo "4. VALIDATE CONFIG:"
-echo "   $ packer validate -var-file=\"packer-vars.json\" ."
+echo -e "${BOLD}2. 🔌 INITIALIZE${NC}"
+echo -e "   ${CYAN}$ packer init .${NC}"
 echo ""
-echo "5. BUILD AMI (Uses AWS CLI creds automatically):"
-echo "   $ packer build -var-file=\"packer-vars.json\" ."
+echo -e "${BOLD}3. 🧹 FORMAT & VALIDATE${NC}"
+echo -e "   ${CYAN}$ packer fmt .${NC}"
+echo -e "   ${CYAN}$ packer validate -var-file=\"packer-vars.json\" .${NC}"
 echo ""
-echo "--------------------------------------------------------"
-echo "Current directory is ready to push. 'packer-vars.json' is ignored."
+echo -e "${BOLD}4. 🏗️  BUILD THE IMAGE${NC}"
+echo -e "   ${CYAN}$ packer build -var-file=\"packer-vars.json\" .${NC}"
+echo ""
+echo -e "${BLUE}============================================================${NC}"
+echo -e "${BOLD}              Ready to push to GitHub!                  ${NC}"
+echo -e "${BLUE}============================================================${NC}"
+echo ""
