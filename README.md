@@ -1,86 +1,55 @@
-#!/bin/bash
+# Secure AMI Automation with Packer & AWS Inspector
 
-# --- 🎨 THEME CONFIGURATION ---
-CYAN='\033[0;36m'
-BLUE='\033[0;34m'
-GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
-RED='\033[0;31m'
-BOLD='\033[1m'
-NC='\033[0m' # No Color
-BORDER="${BLUE}║${NC}"
-DIVIDER="${BLUE}╠══════════════════════════════════════════════════════════════╣${NC}"
-TOP="${BLUE}╔══════════════════════════════════════════════════════════════╗${NC}"
-BOTTOM="${BLUE}╚══════════════════════════════════════════════════════════════╝${NC}"
+![Packer](https://img.shields.io/badge/tool-Packer-blue?style=flat&logo=packer)
+![AWS](https://img.shields.io/badge/cloud-AWS-orange?style=flat&logo=amazon-aws)
+![Inspector](https://img.shields.io/badge/security-AWS%20Inspector-green?style=flat)
+![Status](https://img.shields.io/badge/status-Active-success)
 
-# --- 1. CLEANUP & INIT ---
-rm -f packer.exe
-rm -rf .git
-git init > /dev/null 2>&1
-git branch -M main
+## 📖 Overview
 
-# --- 2. GENERATE SECURE .GITIGNORE ---
-cat <<EOF > .gitignore
-*.exe
-packer-vars.json
-.terraform/
-*.log
-.DS_Store
-EOF
+This repository contains the Infrastructure as Code (IaC) required to automate the creation of secure Amazon Machine Images (AMIs) using **HashiCorp Packer**. 
 
-# --- 3. GENERATE PACKER VARS TEMPLATE ---
-cat <<EOF > packer-vars.json
+The goal is to eliminate manual daily tasks by automating the provisioning of an EC2 instance, installing necessary applications (Nginx, Docker), and validating security compliance using **AWS Inspector** standards (CIS Operating System Security Configuration).
+
+### Key Features
+* **Automation:** Builds immutable AMIs automatically using Packer.
+* **Security:** Integrates AWS Inspector logic and security tagging (`App: nginx`) for vulnerability scanning.
+* **Provisioning:** Installs Nginx and Docker via systemd configuration (`docker.service`).
+
+---
+
+## 📂 Repository Structure
+
+| File | Description |
+| :--- | :--- |
+| `packer.pkr.hcl` | The main Packer template written in HCL (HashiCorp Configuration Language). Defines the builder and provisioners. |
+| `packer-vars.json` | JSON file containing variables such as AWS Region, VPC ID, and Subnet ID. |
+| `docker.service` | Systemd unit file for configuring the Docker service during the build process. |
+
+---
+
+## 🛠️ Prerequisites
+
+Before running the build, ensure you have the following:
+
+1.  **HashiCorp Packer Installed:**
+    * [Download Packer](https://www.packer.io/downloads)
+    * Ensure the binary is in your system `PATH`.
+2.  **AWS Credentials:**
+    * An IAM User with `EC2FullAccess` and permissions to run AWS Inspector.
+    * `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY` configured.
+
+---
+
+## 🚀 Usage
+
+### 1. Configuration
+Update the `packer-vars.json` file with your specific AWS environment details:
+```json
 {
-  "region": "us-east-1",
-  "source_ami": "ami-1234567890abcdef0",
-  "instance_type": "t2.micro",
-  "vpc_id": "vpc-12345678",
-  "subnet_id": "subnet-12345678"
+  "aws_access_key": "YOUR_ACCESS_KEY",
+  "aws_secret_key": "YOUR_SECRET_KEY",
+  "vpc_id": "vpc-xxxxxx",
+  "subnet_id": "subnet-xxxxxx",
+  "region": "us-east-1"
 }
-EOF
-
-# --- 4. GENERATE PROFESSIONAL README ---
-cat << 'EOF' > README.md
-# ☁️ Automated AWS AMI Pipeline with HashiCorp Packer
-
-[![Packer](https://img.shields.io/badge/Packer-1.10+-02A8EF.svg?style=flat&logo=packer)](https://www.packer.io/)
-[![AWS](https://img.shields.io/badge/AWS-AMI--Automation-FF9900.svg?style=flat&logo=amazon-aws)](https://aws.amazon.com/)
-[![Docker](https://img.shields.io/badge/Docker-Enabled-2496ED.svg?style=flat&logo=docker)](https://www.docker.com/)
-[![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
-
-## 📌 Project Overview
-This project demonstrates a **GitOps approach to Immutable Infrastructure**. It automates the creation of production-ready "Golden Images" (AMIs) on AWS using HashiCorp Packer.
-
-Instead of configuring servers manually after launch, this pipeline "bakes" the configuration into the image itself. The resulting AMI comes pre-hardened with a custom **Systemd configuration for Docker**, Nginx, and essential networking tools.
-
----
-
-## 🔐 Security & Authentication
-**Do not hardcode AWS Credentials.**
-This project is designed to use the **AWS CLI credential chain**. Packer will automatically detect your credentials from your environment or `~/.aws/credentials` file.
-
-1.  **Install AWS CLI:** [Link](https://aws.amazon.com/cli/)
-2.  **Configure Local Credentials:**
-    ```bash
-    aws configure
-    ```
-    *Enter your Access Key and Secret Key when prompted.*
-
----
-
-## 🛠️ Technical Highlights
-
-### 🔹 Custom Systemd Integration
-A key feature of this project is the override of the default Docker service behavior using a custom unit file (`docker.service`).
-* **API Exposure:** Configured the daemon to listen on `tcp://0.0.0.0:2375`.
-* **Self-Healing:** Implemented `Restart=always` with a `2s` delay.
-
----
-
-## 🚀 Getting Started (For Developers)
-
-### 1. Clone & Initialize
-```bash
-git clone [https://github.com/chandukh2006/Automate-AWS-AMI-Packer.git](https://github.com/chandukh2006/Automate-AWS-AMI-Packer.git)
-cd Automate-AWS-AMI-Packer
-packer init .
