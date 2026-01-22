@@ -1,21 +1,3 @@
-# 1. Remove unwanted files and reset git
-rm -f packer.exe
-rm -rf .git
-
-# 2. Initialize a fresh Git repository
-git init
-git branch -M main
-
-# 3. Create .gitignore (Critical for security & cleanliness)
-cat <<EOF > .gitignore
-*.exe
-packer-vars.json
-.terraform/
-*.log
-EOF
-
-# 4. Create the Professional README.md
-cat << 'EOF' > README.md
 # ☁️ Automated AWS AMI Pipeline with HashiCorp Packer
 
 [![Packer](https://img.shields.io/badge/Packer-1.10+-02A8EF.svg?style=flat&logo=packer)](https://www.packer.io/)
@@ -103,7 +85,7 @@ packer build -var-file="packer-vars.json" .
 ---
 
 ## 👨‍💻 Author
-**Chandu**
+**Chandu K H**
 *Cloud & DevOps Engineer*
 EOF
 
