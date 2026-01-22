@@ -1,3 +1,46 @@
+#!/bin/bash
+
+# --- 🎨 THEME CONFIGURATION ---
+CYAN='\033[0;36m'
+BLUE='\033[0;34m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+RED='\033[0;31m'
+BOLD='\033[1m'
+NC='\033[0m' # No Color
+BORDER="${BLUE}║${NC}"
+DIVIDER="${BLUE}╠══════════════════════════════════════════════════════════════╣${NC}"
+TOP="${BLUE}╔══════════════════════════════════════════════════════════════╗${NC}"
+BOTTOM="${BLUE}╚══════════════════════════════════════════════════════════════╝${NC}"
+
+# --- 1. CLEANUP & INIT ---
+rm -f packer.exe
+rm -rf .git
+git init > /dev/null 2>&1
+git branch -M main
+
+# --- 2. GENERATE SECURE .GITIGNORE ---
+cat <<EOF > .gitignore
+*.exe
+packer-vars.json
+.terraform/
+*.log
+.DS_Store
+EOF
+
+# --- 3. GENERATE PACKER VARS TEMPLATE ---
+cat <<EOF > packer-vars.json
+{
+  "region": "us-east-1",
+  "source_ami": "ami-1234567890abcdef0",
+  "instance_type": "t2.micro",
+  "vpc_id": "vpc-12345678",
+  "subnet_id": "subnet-12345678"
+}
+EOF
+
+# --- 4. GENERATE PROFESSIONAL README ---
+cat << 'EOF' > README.md
 # ☁️ Automated AWS AMI Pipeline with HashiCorp Packer
 
 [![Packer](https://img.shields.io/badge/Packer-1.10+-02A8EF.svg?style=flat&logo=packer)](https://www.packer.io/)
